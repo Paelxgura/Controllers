@@ -1,0 +1,80 @@
+local v1 = require(game.ReplicatedStorage.Packages.Knit).CreateController({
+    ["Name"] = "DoorController"
+})
+local u2 = game:GetService("TweenService")
+local u3 = TweenInfo.new(0.5, Enum.EasingStyle.Quint)
+local function u7(p4, p5) --[[Anonymous function at line 12]]
+    for _, v6 in p4:GetChildren() do
+        if (v6:IsA("BasePart") or v6:IsA("MeshPart")) and v6.Name ~= "RelativePart" then
+            v6.CanCollide = p5
+        end
+    end
+end
+function v1.SetupDoors(_, p8) --[[Anonymous function at line 20]]
+    --[[
+    Upvalues:
+        [1] = u7
+        [2] = u2
+        [3] = u3
+    --]]
+    for _, u9 in p8.Map:WaitForChild("Doors"):GetDescendants() do
+        if u9:IsA("Model") and u9.Parent:IsA("Folder") then
+            for _, u10 in u9:GetChildren() do
+                if u10:IsA("Model") then
+                    u10:SetAttribute("DefaultCF", u10:GetPivot())
+                    local u11 = Instance.new("CFrameValue", u10)
+                    u11.Value = u10:GetPivot()
+                    u11:GetPropertyChangedSignal("Value"):Connect(function() --[[Anonymous function at line 35]]
+                        --[[
+                        Upvalues:
+                            [1] = u10
+                            [2] = u11
+                        --]]
+                        u10:PivotTo(u11.Value)
+                    end)
+                    u9:GetAttributeChangedSignal("IsOpen"):Connect(function() --[[Anonymous function at line 39]]
+                        --[[
+                        Upvalues:
+                            [1] = u9
+                            [2] = u10
+                            [3] = u7
+                            [4] = u2
+                            [5] = u11
+                            [6] = u3
+                        --]]
+                        local v12 = u9:GetAttribute("IsOpen")
+                        local v13 = u9:GetAttribute("IsInFront")
+                        CFrame.Angles(0, 0, 0)
+                        local v14
+                        if v12 then
+                            v14 = u10:GetAttribute("Close") or CFrame.Angles(0, -1.5707963267948966, 0)
+                        else
+                            v14 = u10:GetAttribute("Open") or CFrame.Angles(0, 0, 0)
+                        end
+                        if v13 and not u9:GetAttribute("IgnoreRelativePart") then
+                            v14 = v14:Inverse()
+                        end
+                        if u10:GetAttribute("Invert") then
+                            v14 = v14:Inverse()
+                        end
+                        u7(u10, false)
+                        u2:Create(u11, u3, {
+                            ["Value"] = u10:GetAttribute("DefaultCF") * v14
+                        }):Play()
+                        task.delay(u3.Time, function() --[[Anonymous function at line 65]]
+                            --[[
+                            Upvalues:
+                                [1] = u7
+                                [2] = u10
+                            --]]
+                            u7(u10, true)
+                        end)
+                    end)
+                end
+            end
+        end
+    end
+end
+function v1.KnitInit(_) --[[Anonymous function at line 73]] end
+function v1.KnitStart(_) --[[Anonymous function at line 76]] end
+return v1
